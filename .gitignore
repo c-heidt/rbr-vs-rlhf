@@ -1,0 +1,11 @@
+# VSCode
+/.vscode/**
+
+# Pycache
+/__pycache__/**
+
+# Output
+/output/**
+
+# Logs
+/logs/**
