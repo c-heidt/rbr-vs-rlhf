@@ -19,9 +19,9 @@ echo "Activating conda environment: $CONDA_ENV"
 source ~/miniconda3/etc/profile.d/conda.sh
 conda activate $CONDA_ENV
 
-echo "Load cuda and install flash attention if not already installed"
+echo "Load cuda module and install flash attention"
 module load devel/cuda/12.8
-pip install flash-attn --no-build-isolation
+pip install flash-attn @ https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3/flash_attn-2.8.3+cu12torch2.5cxx11abiFALSE-cp312-cp312-linux_x86_64.whl
 
 echo "Running the SFT script"
 python "$PROJECT_DIR/sft.py" --project_dir "$PROJECT_DIR"
