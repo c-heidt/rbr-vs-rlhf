@@ -12,7 +12,7 @@
 #SBATCH --mail-type=ALL
 
 
-PROJECT_DIR=$($SLURM_SUBMIT_DIR)
+PROJECT_DIR="$SLURM_SUBMIT_DIR"
 CONDA_ENV=${CONDA_ENV:-"base"}
 
 echo "Activating conda environment: $CONDA_ENV"
@@ -23,5 +23,5 @@ echo "Load cuda module and install flash attention"
 module load devel/cuda/12.8
 pip install flash-attn@https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3/flash_attn-2.8.3+cu12torch2.5cxx11abiFALSE-cp312-cp312-linux_x86_64.whl
 
-echo "Running the SFT script"
+echo "Running the SFT script in project_dir: $PROJECT_DIR"
 python "$PROJECT_DIR/sft.py" --project_dir "$PROJECT_DIR"
