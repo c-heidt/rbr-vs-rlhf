@@ -32,7 +32,7 @@ def _load_model_and_tokenizer() -> Tuple[AutoModelForCausalLM, AutoTokenizer]:
     return model, tokenizer
 
 def _load_trainer_and_config(model: AutoModelForCausalLM, tokenizer: AutoTokenizer,
-                             dataset: datasets.Dataset, project_dir: str) -> Tuple[SFTTrainer, SFTConfig]:
+                             dataset: datasets.Dataset, output_dir: str) -> Tuple[SFTTrainer, SFTConfig]:
     """
     Load the SFT trainer and configuration for training the model on the provided dataset.
     The configuration includes training parameters such as the number of epochs, batch size, learning rate
@@ -42,10 +42,11 @@ def _load_trainer_and_config(model: AutoModelForCausalLM, tokenizer: AutoTokeniz
         model: The pre-trained model to be fine-tuned.
         tokenizer: The tokenizer corresponding to the pre-trained model.
         dataset: The dataset to be used for training.
+        output_dir: Root output directory (e.g. cluster workspace).
     Returns:
         A tuple containing the initialized SFT trainer and its configuration.
     """
-    output_dir = os.path.join(project_dir, SFT_DIR)
+    output_dir = os.path.join(output_dir, SFT_DIR)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     config = SFTConfig(
