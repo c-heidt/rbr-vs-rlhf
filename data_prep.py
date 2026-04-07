@@ -49,11 +49,13 @@ def build_preference_dataset(tokenizer : AutoTokenizer, max_length: int=1024) ->
         chosen_tokens = tokenizer(
             item["chosen"],
             truncation=True,
+            padding="max_length",
             max_length=max_length,
             return_tensors="pt")
         rejected_tokens = tokenizer(
             item["rejected"],
             truncation=True,
+            padding="max_length",
             max_length=max_length,
             return_tensors="pt")
         examples.append({
@@ -63,5 +65,4 @@ def build_preference_dataset(tokenizer : AutoTokenizer, max_length: int=1024) ->
             "rejected_attention_mask": rejected_tokens["attention_mask"].squeeze(),
         })
     dataset = Dataset.from_list(examples)
-    dataset.train_test_split(test_size=0.1)
-    return dataset
+    return dataset.train_test_split(test_size=0.1)
