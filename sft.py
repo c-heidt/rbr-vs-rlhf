@@ -61,14 +61,14 @@ def _load_trainer_and_config(model: AutoModelForCausalLM, tokenizer: AutoTokeniz
         bf16=True,
         logging_steps=10,
         save_steps=200,
-        max_seq_length=1024,
+        max_length=1024,
         dataset_text_field="messages",
         dataloader_num_workers=8,
     )
     trainer = SFTTrainer(
         model=model,
         train_dataset=dataset,  
-        tokenizer=tokenizer,
+        processing_class=tokenizer,
         args=config,
     )
     return trainer, config

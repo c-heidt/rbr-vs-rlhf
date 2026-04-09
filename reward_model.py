@@ -71,7 +71,7 @@ def _load_trainer_and_config(model: AutoModelForSequenceClassification, tokenize
         model=model,
         train_dataset=dataset["train"],
         eval_dataset=dataset["test"],
-        tokenizer=tokenizer,
+        processing_class=tokenizer,
         args=config,
     )
     return trainer, config
