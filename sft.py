@@ -27,8 +27,8 @@ def _load_model_and_tokenizer() -> Tuple[AutoModelForCausalLM, AutoTokenizer]:
         BASE_MODEL_NAME,
         torch_dtype=DTYPE,
         attn_implementation="flash_attention_2",
-        device_map="auto"
     )
+    model.config.use_cache = False
     return model, tokenizer
 
 def _load_trainer_and_config(model: AutoModelForCausalLM, tokenizer: AutoTokenizer,
@@ -76,9 +76,14 @@ def _load_trainer_and_config(model: AutoModelForCausalLM, tokenizer: AutoTokeniz
 def _generate_response(
         model: AutoModelForCausalLM,
         tokenizer: AutoTokenizer,
-        prompt: str,
+        messages: list,
         max_new_tokens: int = 300
         ) -> str:
+    prompt = tokenizer.apply_chat_template(
+        messages,
+        tokenize=False,
+        add_generation_prompt=True
+    )
     inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
     with torch.no_grad():
         outputs = model.generate(
@@ -106,6 +111,7 @@ def sft(output_dir: str) -> Tuple[AutoModelForCausalLM, AutoTokenizer]:
     model, tokenizer = _load_model_and_tokenizer()
     print("Building SFT dataset...")
     dataset = build_sft_dataset()
+    print(f"SFT dataset size: {len(dataset)} examples")
     print("Initializing SFT trainer and configuration...")
     trainer, config = _load_trainer_and_config(model, tokenizer, dataset, output_dir)
     print("Starting training...")
@@ -128,6 +134,7 @@ def evaluate(model: AutoModelForCausalLM, tokenizer: AutoTokenizer, output_dir: 
         prompt: The input prompt for which the model will generate a response.
     """
     print("+++ EVALUATING FINE-TUNED MODEL +++")
+    model.config.use_cache = True
     tokenizer.padding_side = "left"
     output = {}
     for n, prompt in enumerate(SFT_EVALUATION_PROMPTS):
