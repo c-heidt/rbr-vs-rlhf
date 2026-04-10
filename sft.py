@@ -134,6 +134,8 @@ def evaluate(model: AutoModelForCausalLM, tokenizer: AutoTokenizer, output_dir: 
         prompt: The input prompt for which the model will generate a response.
     """
     print("+++ EVALUATING FINE-TUNED MODEL +++")
+    model.gradient_checkpointing_disable()
+    model.eval()
     model.config.use_cache = True
     tokenizer.padding_side = "left"
     output = {}

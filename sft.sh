@@ -8,7 +8,7 @@
 #SBATCH --ntasks=1
 #SBATCH --time=2:00:00
 #SBATCH --cpus-per-task=8
-#SBATCH --mem=128G
+#SBATCH --mem=32G
 #SBATCH --mail-type=ALL
 
 
