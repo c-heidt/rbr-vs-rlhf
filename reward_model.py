@@ -62,6 +62,8 @@ def _load_trainer_and_config(model: AutoModelForSequenceClassification, tokenize
         learning_rate=1e-5,
         bf16=True,
         logging_steps=10,
+        eval_strategy="steps",
+        save_strategy="steps",
         eval_steps=200,
         save_steps=200,
         max_length=1024,
@@ -93,7 +95,7 @@ def reward_model_training(output_dir: str | Path, model_name: str | Path) -> Tup
     print("Loading model and tokenizer...")
     model, tokenizer = _load_model_and_tokenizer(model_name)
     print("Building preference dataset...")
-    dataset = build_preference_dataset(tokenizer)
+    dataset = build_preference_dataset()
     print("Initializing reward trainer and configuration...")
     trainer, config = _load_trainer_and_config(model, tokenizer, dataset, output_dir)
     print("Starting training...")
@@ -122,13 +124,17 @@ def evaluate_reward_model(model: AutoModelForSequenceClassification, tokenizer: 
 
     with torch.no_grad():
         for batch in data_loader:
-            chosen_input_ids = batch["chosen_input_ids"].to(model.device)
-            rejected_input_ids = batch["rejected_input_ids"].to(model.device)
-            chosen_attention_mask = batch["chosen_attention_mask"].to(model.device)
-            rejected_attention_mask = batch["rejected_attention_mask"].to(model.device)
+            chosen_tokens = tokenizer(
+                batch["chosen"], truncation=True, padding="max_length",
+                max_length=1024, return_tensors="pt"
+            ).to(model.device)
+            rejected_tokens = tokenizer(
+                batch["rejected"], truncation=True, padding="max_length",
+                max_length=1024, return_tensors="pt"
+            ).to(model.device)
 
-            chosen_outputs = model(input_ids=chosen_input_ids, attention_mask=chosen_attention_mask)
-            rejected_outputs = model(input_ids=rejected_input_ids, attention_mask=rejected_attention_mask)
+            chosen_outputs = model(**chosen_tokens)
+            rejected_outputs = model(**rejected_tokens)
 
             chosen_scores = chosen_outputs.logits.squeeze(-1)
             rejected_scores = rejected_outputs.logits.squeeze(-1)
