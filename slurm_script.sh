@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=llm-sft
-#SBATCH --output=logs/lm_sft-%j.out
-#SBATCH --error=logs/lm_sft-%j_error.out
+#SBATCH --job-name=lm-posttrain
+#SBATCH --output=logs/lm_posttrain-%j.out
+#SBATCH --error=logs/lm_posttrain-%j_error.out
 #SBATCH --partition=gpu_h100
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
