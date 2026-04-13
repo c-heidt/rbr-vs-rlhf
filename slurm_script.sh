@@ -16,6 +16,8 @@ PROJECT_DIR="$SLURM_SUBMIT_DIR"
 OUTPUT_DIR="${WORKSPACE:-$SCRATCH}"
 CONDA_ENV=${CONDA_ENV:-"base"}
 
+MODE=${MODE:-"sft"}
+
 echo "Activating conda environment: $CONDA_ENV"
 source ~/miniconda3/etc/profile.d/conda.sh
 conda activate $CONDA_ENV
@@ -26,7 +28,17 @@ pip install flash-attn@https://github.com/Dao-AILab/flash-attention/releases/dow
 
 mkdir -p "$OUTPUT_DIR"
 
-echo "Running the SFT script"
 echo "  project_dir : $PROJECT_DIR"
 echo "  output_dir  : $OUTPUT_DIR"
-python "$PROJECT_DIR/sft.py" --output_dir "$OUTPUT_DIR"
+echo "  mode        : $MODE"
+
+if [ "$MODE" = "sft" ]; then
+    echo "Running SFT training"
+    python "$PROJECT_DIR/sft.py" --output_dir "$OUTPUT_DIR"
+elif [ "$MODE" = "reward" ]; then
+    echo "Running reward model training"
+    python "$PROJECT_DIR/reward_model.py" --output_dir "$OUTPUT_DIR"
+else
+    echo "Error: unknown MODE '$MODE'. Use 'sft' or 'reward'."
+    exit 1
+fi
