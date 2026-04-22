@@ -2,7 +2,7 @@
 /.vscode/**
 
 # Pycache
-/__pycache__/**
+**/__pycache__/**
 
 # Output
 /output/**
